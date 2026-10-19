@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagnóstico do site</title>
+<style>body{font:16px/1.5 Arial,sans-serif;margin:0;padding:22px;max-width:640px;background:#fffdf7;color:#2e0d3c}h1{margin:0 0 6px}li{margin:3px 0;list-style:none}.ok{color:#198c4e}.no{color:#b3261e;font-weight:700}#r{font-weight:700;padding:12px;background:#f3e8fa;border-radius:10px}ul{padding:0}</style></head>
+<body><h1>Diagnóstico do site</h1><p id="r">Verificando os arquivos…</p><p id="v"></p><ul id="l"></ul>
+<script>
+const FILES = ["index.html", "app.js", "automacao.css", "config.css", "favicon.svg", "firebase-config.js", "foto-copo-banana.jpeg", "foto-copo-chocolate.jpeg", "foto-copo-colorido.jpeg", "foto-copo-grande.jpeg", "foto-copo-joca.jpeg", "foto-copo-trufado.jpeg", "foto-pote-fundo-preto.jpeg", "foto-pote-joca.jpeg", "logo-oficial.jpeg", "loja-areia-preta.jpeg", "menu-data.js", "og.jpg", "pedidos.js", "styles.css"];
+(async () => {
+  const ul = document.getElementById("l"); let ruins = 0;
+  const novo = await fetch("index.html?d=" + Date.now(), { cache: "no-store" }).then((r) => r.text()).then((t) => t.includes("pedidos.js")).catch(() => false);
+  document.getElementById("v").textContent = novo ? "✅ O index.html publicado é a versão NOVA." : "⚠️ O index.html publicado ainda é a versão ANTIGA (envie o index.html novo).";
+  for (const f of FILES) {
+    const li = document.createElement("li"); let ok = false;
+    try { ok = (await fetch(f + "?d=" + Date.now(), { cache: "no-store" })).ok; } catch (e) {}
+    if (ok && /\.(jpe?g|png|avif|webp|svg)$/i.test(f)) ok = await new Promise((res) => { const i = new Image(); i.onload = () => res(true); i.onerror = () => res(false); i.src = f + "?d=" + Date.now(); });
+    li.className = ok ? "ok" : "no"; li.textContent = (ok ? "✅ " : "❌ FALTANDO OU COM ERRO: ") + f; ul.appendChild(li); if (!ok) ruins++;
+  }
+  document.getElementById("r").textContent = ruins ? ruins + " arquivo(s) com problema. Envie esses arquivos para o GitHub, na mesma pasta do index.html." : "Tudo certo: todos os arquivos estão no ar.";
+})();
+</script></body></html>
